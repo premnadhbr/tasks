@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_19/controller/items/bloc/items_bloc.dart';
 import 'package:flutter_application_19/widgets/customIcon.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -14,168 +15,206 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  HomeBloc homeBloc = HomeBloc();
   @override
   void initState() {
-    homeBloc.add(CategoryInitialFetchEvent());
     super.initState();
-    // BlocProvider.of<HomeBloc>(context).add(CategoryInitialFetchEvent());
-    // BlocProvider.of<HomeBloc>(context).add(HomeProductsFetchEvent());
+    BlocProvider.of<HomeBloc>(context).add(CategoryInitialFetchEvent());
+    BlocProvider.of<ItemsBloc>(context).add(HomeProductsFetchEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        padding: EdgeInsets.all(20.sp),
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20.sp),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Hi, Shammas",
+                        style: TextStyle(
+                          fontSize: 23.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text("Let's start shopping"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      CustomIconContainer(icon: CupertinoIcons.heart),
+                      SizedBox(width: 2.w),
+                      CustomIconContainer(icon: CupertinoIcons.bell),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 2.h),
+              TextField(
+                decoration: InputDecoration(
+                  fillColor: Colors.grey[100],
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  prefixIcon: Icon(Icons.search),
+                  hintText: "Search",
+                ),
+              ),
+              SizedBox(height: 2.h),
+              Container(
+                height: 23.h,
+                decoration: BoxDecoration(),
+                child: Placeholder(),
+              ),
+              SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Hi, Shammas",
-                    style: TextStyle(
-                      fontSize: 23.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    "Categories",
+                    style:
+                        TextStyle(fontSize: 17.sp, fontWeight: FontWeight.bold),
                   ),
-                  Text("Let's start shopping"),
+                  Text(
+                    "See All",
+                    style:
+                        TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w400),
+                  ),
                 ],
+              ),
+              SizedBox(height: 2.h),
+              BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) {
+                  print(state);
+                  if (state is CategoriesFetchSuccessfulState) {
+                    return SizedBox(
+                      height: 13.h,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.categories.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: EdgeInsets.symmetric(horizontal: 4.w),
+                            child: Column(
+                              children: [
+                                CircleAvatar(radius: 22.sp),
+                                SizedBox(height: 1.h),
+                                Text(
+                                  state.categories[index].categoryName
+                                      .toString(),
+                                  style: TextStyle(fontSize: 16.sp),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomIconContainer(icon: CupertinoIcons.heart),
-                  SizedBox(
-                    width: 2.w,
+                  Text(
+                    "Top Selling",
+                    style:
+                        TextStyle(fontSize: 17.sp, fontWeight: FontWeight.bold),
                   ),
-                  CustomIconContainer(icon: CupertinoIcons.bell)
+                  Text(
+                    "View All",
+                    style:
+                        TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w400),
+                  ),
                 ],
-              )
-            ],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          TextField(
-            decoration: InputDecoration(
-                fillColor: Colors.grey[100],
-                filled: true,
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(12)),
-                prefixIcon: Icon(Icons.search),
-                hintText: "Search"),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          Container(
-            height: 23.h,
-            child: Placeholder(),
-            decoration: BoxDecoration(),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Categories",
-                style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.bold),
               ),
-              Text(
-                "See All",
-                style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w400),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              switch (state.runtimeType) {
-                case CategoriesFetchSuccessfulState:
-                  final successState = state as CategoriesFetchSuccessfulState;
-                  return SizedBox(
-                    height: 15.h,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: successState.categories.length,
+              BlocBuilder<ItemsBloc, ItemsState>(
+                builder: (context, state) {
+                  print(state);
+                  if (state is HomeProductsFetchSuccessfulState) {
+                    return GridView.builder(
+                      physics:
+                          NeverScrollableScrollPhysics(), // Disable inner scrolling
+                      shrinkWrap: true, // Let GridView take only needed height
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisExtent: 250,
+                        mainAxisSpacing: 12.0,
+                        crossAxisSpacing: 12.0,
+                      ),
+                      itemCount: state.products.length,
                       itemBuilder: (context, index) {
                         return Container(
-                          margin: EdgeInsets.symmetric(horizontal: 4.w),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CircleAvatar(radius: 22.sp),
                               SizedBox(
-                                height: 1.h,
+                                height: 140,
+                                child: Placeholder(),
                               ),
-                              Text(
-                                successState.categories[index].categoryName
-                                    .toString(),
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    state.products[index].name,
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    "RS.${state.products[index].price.toString()}",
+                                    style: TextStyle(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    state.products[index].description,
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.shopping_bag_rounded,
+                                          color: Colors.red,
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              )
                             ],
                           ),
                         );
                       },
-                    ),
-                  );
-                default:
-                  return Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Top Selling",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
-              ),
-              Text(
-                "View All",
-                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16.sp),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
               ),
             ],
           ),
-          BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              switch (state.runtimeType) {
-                case HomeProductsFetchSuccessfulState:
-                  final successState =
-                      state as HomeProductsFetchSuccessfulState;
-                  return SizedBox(
-                    height: 15.h,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: successState.products.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.symmetric(horizontal: 4.w),
-                          child: Column(
-                            children: [
-                              Text(
-                                successState.products[index].name.toString(),
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                default:
-                  return Center(child: CircularProgressIndicator());
-              }
-            },
-          )
-        ],
+        ),
       ),
     );
   }

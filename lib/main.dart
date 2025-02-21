@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_19/controller/home/bloc/home_bloc.dart';
+import 'package:flutter_application_19/controller/items/bloc/items_bloc.dart';
 import 'package:flutter_application_19/controller/loginScreen/bloc/login_bloc.dart';
 import 'package:flutter_application_19/view/home/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,10 +14,11 @@ void main() {
           create: (context) => LoginBloc(),
         ),
         BlocProvider(
-          create: (context) => HomeBloc()
-            ..add(CategoryInitialFetchEvent())
-            ..add(HomeProductsFetchEvent()),
-        )
+          create: (context) => HomeBloc(),
+        ),
+        BlocProvider(
+          create: (context) => ItemsBloc(),
+        ),
       ],
       child: MyApp(),
     ),
