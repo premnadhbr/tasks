@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_19/view/categories/categories.dart';
 import 'package:flutter_application_19/view/home/home.dart';
 
 class Bottomnav extends StatefulWidget {
@@ -14,10 +15,10 @@ class _HomeState extends State<Bottomnav> {
 
   List<Widget> screens = [
     Home(),
-    Home(),
-    Home(),
-    Home(),
-    Home(),
+    Categories(),
+    Scaffold(),
+    Scaffold(),
+    Scaffold(),
   ];
 
   void _onItemTapped(int index) {

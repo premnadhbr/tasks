@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_19/controller/loginScreen/bloc/login_bloc.dart';
+import 'package:flutter_application_19/view/BottomNav/BottomNav.dart';
 import 'package:flutter_application_19/widgets/CustomButton.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -18,7 +19,15 @@ class _LoginscreenState extends State<Loginscreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginBloc, LoginState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is LoginSuccessState) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Bottomnav(),
+              ));
+        }
+      },
       builder: (context, state) {
         return Scaffold(
           body: ListView(
